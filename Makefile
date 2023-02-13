@@ -2,13 +2,13 @@ COMP 		 = cc
 
 LINK 		 = cc
 
-FILE 		 = Assignment_2_AstridLauraJunior.c
+FILE 		 = Proyect_1_AstridLauraJunior.c
 
-OBJ 		 = Assignment_2_AstridLauraJunior.o
+OBJ 		 = Proyect_1_AstridLauraJunior.o
 
 LIBRERYS = twitter.h global_variables.h
 
-PROGRAM  = Assignment_2_AstridLauraJunior
+PROGRAM  = Proyect_1_AstridLauraJunior
 
 $(OBJ) : $(FILE) $(LIBRERYS)
 	$(COMP) $(FILE) $(LIBRERYS) -o $(OBJ)
