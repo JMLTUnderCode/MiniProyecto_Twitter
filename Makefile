@@ -1,3 +1,4 @@
+# Renombrado de archivos.
 COMP 		 = cc
 
 LINK 		 = cc
@@ -8,10 +9,19 @@ OBJ 		 = Proyect_1_AstridLauraJunior.o
 
 LIBRERYS = twitter.h global_variables.h
 
-PROGRAM  = Proyect_1_AstridLauraJunior
+PROGRAM  = Proyect_1_AstridLauraJunior.exe
 
-$(OBJ) : $(FILE) $(LIBRERYS)
-	$(COMP) $(FILE) $(LIBRERYS) -o $(OBJ)
 
-$(PROGRAM) : $(OBJ)
-	$(COMP) $(OBJ) -o $(PROGRAM)
+# Funcion de make
+.PHONY: all clean
+
+all: $(OBJ)
+
+clean: 
+	rm $(OBJ)
+
+# Compilacion
+OBJECTS: $(OBJ)
+
+$(OBJ) : $(FILE)
+	$(COMP) $(FILE) -o $(OBJ)
