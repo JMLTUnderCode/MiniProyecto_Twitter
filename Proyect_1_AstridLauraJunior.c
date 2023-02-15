@@ -6,6 +6,7 @@
  * El proposito de esta tarea es evaluar el manejo de apuntadores, estructuras,
  * y estrings en C a traves de un programa iterativo.
  *
+ *
  */
 
 #include "twitter.h"
