@@ -38,13 +38,13 @@ void cleanBuffer(const char* str){
 void name_pass(){
 	while(TRUE){
 		fflush(stdin);
-		printf("|* -> USERNAME(Max. 16 caracters): "); scanf("%s", &username);
+		printf("|* -> USERNAME(Max. 16 caracters): "); scanf("%s", username);
 		if(valid_len(username)) 
 			break;;	
 	}
 	while(TRUE){
 		fflush(stdin);
-		printf("|* -> PASSWORD(Max. 16 Caracters): "); scanf("%s", &password);
+		printf("|* -> PASSWORD(Max. 16 Caracters): "); scanf("%s", password);
 		if(valid_len(password)) 
 			break;
 	}
@@ -65,7 +65,7 @@ int valid_len(const char* str){
 // Permite en funcion de la opcion dada ir a su respectiva funcion.
 void user_input(){
 	fflush(stdin);
-	scanf("%s", &user_option);
+	scanf("%s", user_option);
 		
 	if(strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0) {
 		name_pass();
@@ -130,7 +130,7 @@ void signup(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Your data is:                                     *|\n");
 	printf("|*    ID: %18s                            *|\n", username);
-	printf("|*    Pass: %16s                            *|\n",password);
+	printf("|*    Pass: %16s                            *|\n", password);
 	printf("|* -> Do not forget!                                    *|\n");
 	printf("|*                                                      *|\n");
 	
