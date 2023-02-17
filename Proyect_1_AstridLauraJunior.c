@@ -276,6 +276,13 @@ void print_messages(const char* str){
 		
 	}
 }
+int hash_function(char *key){
+	int ln = strlen(key) -1;
+	int accum = 0;
+	for(int i=0; i<ln; i++){
+		accum += key[i];
+	}
+	return accum % SLOTS_HASH;
 
 int main(){
 	initial_interfaz();
