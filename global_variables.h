@@ -29,6 +29,15 @@ char username[17]; 				// Para username del usuario, MAX 16 Chars.
 char password[17]; 				// Para password del usuario, MAX 16 chars/digitos.
 user_data *INFO_USER; 		// Informacion clobal del usuario que esta logeado.
 
+/***************************************************************/
+// Definicion de HashTable y funciones para la misma.
+user_data *HashTable[SLOTS_HASH];
+
+void add_node(); 								// Agrega un nodo de tipo USER_DATA a la tabla.
+void search_node(const char*); 	// Busca un nodo de tipo USER_DATA en la tabla.
+
+/***************************************************************/
+// ESTRUCTURAS TIPO NODO INFORMATIVO.
 struct info_tweets{
 	char user[MAX_INPUT];
 	tm_t time;
@@ -38,12 +47,15 @@ struct info_tweets{
 struct user_data{
 	char user[MAX_INPUT];
 	int password_h;
-	list_tweets *tweets;
+	info_tweets *tweets;
  	list_users *following; 
 	list_users *followers;
 	info_tweets *timeline;
 };
 
+
+/**************************************************************t*
+// LISTAS ENLAZADAS
 struct list_users{
 	user_data nodo;
 	list_users *next;
@@ -54,4 +66,6 @@ struct list_tweets{
 	list_tweets *next;
 };
 
-/**/
+
+
+/***************************************************************/
