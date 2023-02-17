@@ -9,6 +9,7 @@
 #define FALSE !TRUE 			// Macro de FALSE del lenguaje.
 #define SLOTS_HASH 97 		// Longitud constante de la tabla de hash.
 #define SLOTS_TWEET 281 	// Numero maximo de caracteres para un tweet.
+#define MAX_INPUT 17 			// Numerom aximo de caracteres para el username/password
 
 struct user_data; 				// Nodo informativo de un usuario.
 struct info_tweets; 			// Nodo informativo de un tweet.
@@ -28,14 +29,14 @@ char username[17]; 				// Para username del usuario, MAX 16 Chars.
 char password[17]; 				// Para password del usuario, MAX 16 chars/digitos.
 user_data *INFO_USER; 		// Informacion clobal del usuario que esta logeado.
 
-struct list_timeline{
-	char user;
+struct info_tweets{
+	char user[MAX_INPUT];
 	tm_t time;
 	char message[SLOTS_TWEET];
 };
 
 struct user_data{
-	char user;
+	char user[MAX_INPUT];
 	int password_h;
 	list_tweets *tweets;
  	list_users *following; 
@@ -45,12 +46,12 @@ struct user_data{
 
 struct list_users{
 	user_data nodo;
-	list_user *next;
+	list_users *next;
 };
 
 struct list_tweets{
 	info_tweets tweets;
-	struct list_tweets *next;
+	list_tweets *next;
 };
 
 /**/
