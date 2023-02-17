@@ -74,17 +74,17 @@ int valid_len(const char* str){
 void user_input(){
 	fflush(stdin);
 	scanf("%s", user_option);
-		
-	if(strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0)
+	lowercase(user_option);		
+	if(strcmp(user_option, "login")==0)
 		name_pass();
 
-	else if(strcmp(user_option, "signup")==0 || strcmp(user_option, "Signup")==0 || strcmp(user_option, "SIGNUP")==0)
+	else if(strcmp(user_option, "signup")==0)
 		signup();
 
-	else if(strcmp(user_option, "leave")==0 || strcmp(user_option, "Leave")==0 || strcmp(user_option, "LEAVE")==0)
+	else if(strcmp(user_option, "leave")==0)
 		leave();
 
-	else if(strcmp(user_option, "logout")==0 || strcmp(user_option, "Logout")==0 || strcmp(user_option, "LOGOUT")==0)
+	else if(strcmp(user_option, "logout")==0)
 		logout();
 
 	else if( user_option[0] == '+' )
