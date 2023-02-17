@@ -38,23 +38,31 @@ void cleanBuffer(const char* str){
 void name_pass(){
 	while(TRUE){
 		fflush(stdin);
-		printf("|* -> USERNAME(Max. 16 caracters): "); scanf("%s", username);
+		printf("|* -> USERNAME(Min. 8 - Max. 16 chars): "); scanf("%s", username);
 		if(valid_len(username)) 
-			break;;	
+			break;
 	}
 	while(TRUE){
 		fflush(stdin);
-		printf("|* -> PASSWORD(Max. 16 Caracters): "); scanf("%s", password);
+		printf("|* -> PASSWORD(Min. 8 - Max. 16 Chars): "); scanf("%s", password);
 		if(valid_len(password)) 
 			break;
+	}
+	if(user_validation(username) && (strcmp(user_option, "signup")==0 || strcmp(user_option, "Signup")==0 || strcmp(user_option, "SIGNUP")==0)) {
+		printf("|* -> Error: User already exists.*|\n");
+		Goto_init();
+
+	} else if ( !user_validation(username) && (strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0)){
+		printf("|* -> Error: Incorrect user or password.                 *|\n");
+		Goto_init();
 	}
 }
 
 // Funcion que se encarga de check el userinput del usarname y password, dado
 // que se tieneu n maximo de 16 caracteres por campo.
 int valid_len(const char* str){
-	if(strlen(str) > 16){
-		printf("|* -> Error! Maximum characters exceeded.                *|\n");
+	if(strlen(str) > 16 || strlen(str) < 8 ){
+		printf("|* -> Error: Invalid amount of chars.                    *|\n");
 		printf("|*                                                       *|\n");
 		return FALSE;
 	} else
@@ -67,16 +75,10 @@ void user_input(){
 	fflush(stdin);
 	scanf("%s", user_option);
 		
-	if(strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0) {
+	if(strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0)
 		name_pass();
-		if(user_validation()){
-			user_timeline();
-		} else {
-			printf("|* -> Invalid Username of Password!                     *|\n");
-			Goto_init();
-		}
-		
-	} else if(strcmp(user_option, "signup")==0 || strcmp(user_option, "Signup")==0 || strcmp(user_option, "SIGNUP")==0)
+
+	else if(strcmp(user_option, "signup")==0 || strcmp(user_option, "Signup")==0 || strcmp(user_option, "SIGNUP")==0)
 		signup();
 
 	else if(strcmp(user_option, "leave")==0 || strcmp(user_option, "Leave")==0 || strcmp(user_option, "LEAVE")==0)
@@ -157,21 +159,78 @@ void leave(){
 	printf("`--------------------------------------------------------`\n");
 }
 
+// Funcion que transforma a minusculas una cadena.
+void lowercase(char* str){
+	for(int i = 0; i < strlen(str); i++)
+		str[i] = tolower(str[i]);
+}
+
 // Funcion que permite mostrar por pantalla el perfil de un usuario.
 void goto_perfil(){
-	printf("check perfil\n");
+	
+	char user_temp;
+	char opt;
+	printf("|*                                                      *|\n");
+	printf("|* -> Enter user: @"); scanf("%s", &user_temp);
+	
+	if(user_validation(&user_temp))
+		print_messages(&user_temp);
+	else {
+		printf("|* -> Error: User not found.                          *|\n");
+		printf("|* -> Do you want to try again?[Y/n]: ");
+		scanf("%s", &opt);
+		if( strcmp(&opt, "y") || strcmp(&opt, "Y"))
+			goto_perfil();
+		else
+			user_timeline();
+	}
+	
+	while(TRUE){
+		printf("|*                                                      *|\n");
+		printf("|* -> What to do?                                       *|\n");
+		printf("|* ->  Follow, Back, Logout, @ (Go to perfil)           *|\n");
+		printf("|* -> Option: ");
+		scanf("%s", &opt);
+		lowercase(&opt);
+		if( strcmp(&opt, "follow") == 0 ) {
+			// funcion follow
+			break;
+		} else if ( strcmp(&opt, "back") == 0 ) {
+			user_timeline(username);
+			break;
+		} else if ( strcmp(&opt, "logout") == 0 ) {
+			logout();
+			break;
+		} else if ( strcmp(&opt, "@") == 0 ) {
+			goto_perfil();
+			break;
+		}
+	}
 }
 
 // Funcion que permite agregar un nuevo tweet a la lista de tweets del usuaro
 // Loged.
 void add_tweet(){
-	printf("check add tweet\n");
+	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
+	// no mas de 280 chars, es decir usar la funcion cleanBuffer.
+	// Agregar a la estructura de datos del usuario en lista tweets el mensaje.
+	// Similarmente se debe agregar este tweets a los timeline de los followers
+	// del usuario acutal.
+	//
 }
 
 // Funcion que permite buscar en la estructura de datos al user y password
 // tal que su cuenta sea correcta. Se retorna TRUE en caso afirmativo, de lo
 // contrario FALSE. Con TRUE, FALSE definida por macros.
-int user_validation(){
+int user_validation(const char* str){
+
+	// Hacer uso de la variable user_option para saber en que caso estamos
+	// login o signup para realizar las respectivos retornos.
+	//
+	// En caso de TRUE y modo LOGIN almacenar en la variable global 
+	// INFO_USER el apuntador
+	// a dicha estructura de dato.
+
 	return TRUE;
 }
 
@@ -187,15 +246,23 @@ void user_timeline(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Tweets Timeline:                                  *|\n");
 	printf("|*                                                      *|\n");
-
-	/*
-	 * Acada debe ir el codigo para mostrar timeline
-	 * */
+	
+	print_messages(username);
 	
 	printf("|*                                                      *|\n");
 	printf("|* -> WHAT'S HAPPENING?                                 *|\n");
 	printf("|* ->  + (add tweet), @ (Go to perfil of), Logout: ");
 	user_input();
+}
+
+// Funcion que permite mostrar por pantalla dependiendo el caso de login o 
+// signup los tweets.
+void print_messages(const char* str){
+	if(strcmp(user_option, "login")==0){ // Imprimir TIMELINE del usuario actual.
+
+	} else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
+		
+	}
 }
 
 int main(){

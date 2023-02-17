@@ -47,12 +47,18 @@ void add_tweet();
 // Funcion que permite buscar en la estructura de datos al user y password
 // tal que su cuenta sea correcta. Se retorna TRUE en caso afirmativo, de lo
 // contrario FALSE. Con TRUE, FALSE definida por macros.
-int user_validation();
+int user_validation(const char*);
 
 // Funcion que permite mostrar el timeline del usuario una vez que este haya
 // ingresado con exito.
 void user_timeline();
 
+// Funcion que se encarga de ingresar a la lista timeline del usuario dado por
+// argumento o en otro caso la lista de twwets del usuario.
+void print_messages(const char*);
+
+// Funcion para pasar una cadena a solo chars de tipo minuscula.
+void lowercase(char*);
 /**/
 
 
