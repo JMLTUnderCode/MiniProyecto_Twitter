@@ -48,14 +48,16 @@ void name_pass(){
 		if(valid_len(password)) 
 			break;
 	}
-	if(user_validation(username) && (strcmp(user_option, "signup")==0 || strcmp(user_option, "Signup")==0 || strcmp(user_option, "SIGNUP")==0)) {
+	lowercase(username);
+	if(user_validation(username) && (strcmp(user_option, "signup")==0)) {
 		printf("|* -> Error: User already exists.*|\n");
 		Goto_init();
 
-	} else if ( !user_validation(username) && (strcmp(user_option, "login")==0 || strcmp(user_option, "Login")==0 || strcmp(user_option, "LOGIN")==0)){
+	} else if ( !user_validation(username) && (strcmp(user_option, "login")==0)){
 		printf("|* -> Error: Incorrect user or password.                 *|\n");
 		Goto_init();
 	}
+	user_validation(username);
 }
 
 // Funcion que se encarga de check el userinput del usarname y password, dado
@@ -211,6 +213,16 @@ void goto_perfil(){
 // Funcion que permite agregar un nuevo tweet a la lista de tweets del usuaro
 // Loged.
 void add_tweet(){
+	char tweet[281];
+	fgets(tweet, 281, stdin);
+
+	if(strlen(tweet)>281){
+		cleanBuffer(tweet);
+	}
+
+	
+
+
 	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
 	// no mas de 280 chars, es decir usar la funcion cleanBuffer.
 	// Agregar a la estructura de datos del usuario en lista tweets el mensaje.
