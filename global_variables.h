@@ -13,16 +13,16 @@
 #define SLOTS_HASH 97
 
 struct list_user;
-typedef struct list_user list_user
+typedef struct list_user list_user;
 
 struct user_data;
-typedef struct user_data user_data
+typedef struct user_data user_data;
 
 struct user_timeline;
-typedef struct user_timeline user_timeline
+typedef struct user_timeline user_timeline;
 
 struct list_tweets;
-typedef struct list_tweets list_tweets
+typedef struct list_tweets list_tweets;
 
 // Definicion, inicializacion y estructuras de datos.
 char user_option[10];			// Para las  opciones que toma el user.(login, signup, etc)
