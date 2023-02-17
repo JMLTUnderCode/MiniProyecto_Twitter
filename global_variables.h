@@ -31,21 +31,21 @@ user_data *INFO_USER; 		// Informacion clobal del usuario que esta logeado.
 
 /***************************************************************/
 // Definicion de HashTable y funciones para la misma.
-user_data *HashTable[SLOTS_HASH];
+list_users *HashTable[SLOTS_HASH];
 
-void add_node(); 								// Agrega un nodo de tipo USER_DATA a la tabla.
-void search_node(const char*); 	// Busca un nodo de tipo USER_DATA en la tabla.
+void add_node(char); 						// Agrega un nodo de tipo USER_DATA a la tabla.
+int search_node(char*); 	// Busca un nodo de tipo USER_DATA en la tabla.
 
 /***************************************************************/
 // ESTRUCTURAS TIPO NODO INFORMATIVO.
 struct info_tweets{
 	char user[MAX_INPUT];
-	tm_t time;
+	tm_t *time;
 	char message[SLOTS_TWEET];
 };
 
 struct user_data{
-	char user[MAX_INPUT];
+	char user;
 	int password_h;
 	info_tweets *tweets;
  	list_users *following; 
@@ -54,9 +54,10 @@ struct user_data{
 };
 
 
-/**************************************************************t*
+/***************************************************************/
 // LISTAS ENLAZADAS
 struct list_users{
+	int id;
 	user_data nodo;
 	list_users *next;
 };
