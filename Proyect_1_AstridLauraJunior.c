@@ -11,6 +11,15 @@
 
 #include "twitter.h"
 
+int hash_function(char *key){
+	int ln = strlen(key);
+	int accum = 0;
+	for(int i=0; i<ln; i++){
+		accum += key[i];
+	}
+	return accum % SLOTS_HASH;
+}
+
 // Funcion que muestra la interfaz base del programa. Nombre de la 
 // App simulada, prompt base y solicitud de datos.
 void initial_interfaz(){
@@ -217,17 +226,17 @@ void add_tweet(){
 	list_tweets* newTweet = (list_tweets*)malloc(sizeof(list_tweets)); 
 	char n_tweet[MAX_INPUT];
 
-	fgets(tweet, MAX_INPUT, stdin);
+	fgets(n_tweet, MAX_INPUT, stdin);
 	
-	if(strlen(tweet)>MAX_INPUT){
-		cleanBuffer(tweet);
+	if(strlen(n_tweet)>MAX_INPUT){
+		cleanBuffer(n_tweet);
 	}
 	
 	time(&t_nt);
 	
-	newTweet->tweet.user = INFO_USER->user;
-	newTweet->tweet.time = localtime(&t_nt);
-	newTweet->tweet.message = n_tweet;
+	sscanf(INFO_USER->user, "%s", newTweet->tweets.user);
+	newTweet->tweets.time = localtime(&t_nt);
+	sscanf(n_tweet, "%s", newTweet->tweets.message);
 
 	list_tweets* aux = INFO_USER->tweets;
 
@@ -235,8 +244,7 @@ void add_tweet(){
 		aux = aux->next;
 	}
 
-	aux->next.
-
+	aux = newTweet;
 
 	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
 	// no mas de 280 chars, es decir usar la funcion cleanBuffer.
@@ -291,14 +299,6 @@ void print_messages(const char* str){
 		
 	}
 }
-int hash_function(char *key){
-	int ln = strlen(key) -1;
-	int accum = 0;
-	for(int i=0; i<ln; i++){
-		accum += key[i];
-	}
-	return accum % SLOTS_HASH;
-
 int main(){
 	initial_interfaz();
 	
