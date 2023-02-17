@@ -59,6 +59,8 @@ void print_messages(const char*);
 
 // Funcion para pasar una cadena a solo chars de tipo minuscula.
 void lowercase(char*);
+
+int hash_function(char*);
 /**/
 
 
