@@ -213,14 +213,29 @@ void goto_perfil(){
 // Funcion que permite agregar un nuevo tweet a la lista de tweets del usuaro
 // Loged.
 void add_tweet(){
-	char tweet[281];
-	fgets(tweet, 281, stdin);
+	time_t t_nt;
+	list_tweets* newTweet = (list_tweets*)malloc(sizeof(list_tweets)); 
+	char n_tweet[MAX_INPUT];
 
-	if(strlen(tweet)>281){
+	fgets(tweet, MAX_INPUT, stdin);
+	
+	if(strlen(tweet)>MAX_INPUT){
 		cleanBuffer(tweet);
 	}
-
 	
+	time(&t_nt);
+	
+	newTweet->tweet.user = INFO_USER->user;
+	newTweet->tweet.time = localtime(&t_nt);
+	newTweet->tweet.message = n_tweet;
+
+	list_tweets* aux = INFO_USER->tweets;
+
+	while(aux->next != NULL){
+		aux = aux->next;
+	}
+
+	aux->next.
 
 
 	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
