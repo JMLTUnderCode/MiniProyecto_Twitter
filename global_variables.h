@@ -18,8 +18,8 @@ typedef struct list_user list_user;
 struct user_data;
 typedef struct user_data user_data;
 
-struct user_timeline;
-typedef struct user_timeline user_timeline;
+struct list_timeline;
+typedef struct list_timeline list_timeline;
 
 struct list_tweets;
 typedef struct list_tweets list_tweets;
@@ -38,18 +38,18 @@ struct list_tweets{
 struct user_data{
 	char user;
 	int password_h;
-	struct list_tweets *tweets;
- 	struct list_user *following; // Los que sigo.
-	struct list_user *followers; // Los que me siguen.
-	struct user_timeline *timeline;
+	list_tweets *tweets;
+ 	list_user *following; // Los que sigo.
+	list_user *followers; // Los que me siguen.
+	list_timeline *timeline;
 };
 
-struct lista_user{
-	struct user_data nodo;
-	struct lista_user *next;
+struct list_user{
+	user_data nodo;
+	list_user *next;
 };
 
-struct user_timeline{
+struct list_timeline{
 	char user;
 	struct tm time;
 	char message;
