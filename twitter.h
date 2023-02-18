@@ -10,7 +10,7 @@ void cleanBuffer(const char*);
 
 // Funcion encargada en solicitar por pantalla el username y password al usuario
 // por standardInput.
-void name_pass();
+int name_pass();
 
 // Funcion que se encarga de check el userinput del username y password, dado
 // que se tiene un maximo de 16 caracteres por campo.
