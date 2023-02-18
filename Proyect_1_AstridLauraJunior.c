@@ -412,11 +412,29 @@ void print_messages(const char* str){
 
 	} else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
 		
-	}
+		}
 }
 
 void follow_user(char *str ){
+	printf("A1: %s", str);
 
+	int h_usert = hash_function(str);
+	
+	printf("A");
+	
+	list_users* new_fuser = HashTable[h_usert];
+	list_users* user_aux = INFO_USER->following;
+	
+	printf("B");
+
+	while(user_aux->next != NULL){
+		user_aux = user_aux->next;
+	}
+
+	printf("C");
+
+	user_aux->next = new_fuser;
+	printf("|* Following success!");
 }
 
 int main(){
