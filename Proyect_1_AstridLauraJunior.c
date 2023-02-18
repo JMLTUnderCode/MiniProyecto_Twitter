@@ -407,12 +407,36 @@ void user_timeline(){
 
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
 // signup los tweets.
-void print_messages(const char* str){
+void print_messages(char* str){
 	if(strcmp(user_option, "login")==0){ // Imprimir TIMELINE del usuario actual.
-
-	} else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
-		
+		list_tweets *temp = INFO_USER-> timeline;
+		print_tweet(*temp);
+	}else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
+		int k = hash_function(str);
+		list_users *usertemp = HashTable[k];
+		while (usertemp->nodo.user != str){
+			usertemp = usertemp->next;
 		}
+		list_tweets *temporal= usertemp->nodo.tweets;
+		print_tweet(*temporal);
+			
+		}
+	}
+void print_tweet(list_tweets *temp){
+	while(temp->next != NULL){
+			char aux[18] = "@";
+			char usertweet[SLOTS_TWEET];
+			strncpy(temp->tweets.message, usertweet, SLOTS_TWEET);
+			strcat(aux,temp->tweets.user);
+			printf("--------------------------------------------------");
+			printf("|*  %17s                                           *|\n",aux);
+			while (strlen(usertweet) > 50 ){  
+				printf("|*  %.50s  *|\n",usertweet);
+				memmove(usertweet, usertweet+OFFSET, strlen(usertweet)+1-OFFSET);
+			}
+			printf("|*  %s\n  *|",usertweet);
+			temp = temp-> next;
+			}
 }
 
 void follow_user(char *str ){
