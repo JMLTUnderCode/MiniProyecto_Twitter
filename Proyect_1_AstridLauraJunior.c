@@ -410,18 +410,18 @@ void user_timeline(){
 void print_messages(char* str){
 	if(strcmp(user_option, "login")==0){ // Imprimir TIMELINE del usuario actual.
 		list_tweets *temp = INFO_USER-> timeline;
-		print_tweet(*temp);
+		print_tweet(temp);
 	}else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
 		int k = hash_function(str);
 		list_users *usertemp = HashTable[k];
-		while (usertemp->nodo.user != str){
+		while (usertemp->nodo.user != str)
 			usertemp = usertemp->next;
-		}
+		
 		list_tweets *temporal= usertemp->nodo.tweets;
-		print_tweet(*temporal);
-			
-		}
+		print_tweet(temporal);	
 	}
+}
+
 void print_tweet(list_tweets *temp){
 	while(temp->next != NULL){
 			char aux[18] = "@";
@@ -439,7 +439,7 @@ void print_tweet(list_tweets *temp){
 			}
 }
 
-void follow_user(char *str ){
+void follow_user(char *str){
 	printf("A1: %s", str);
 
 	int h_usert = hash_function(str);

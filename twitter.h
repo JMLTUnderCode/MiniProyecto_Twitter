@@ -55,15 +55,17 @@ void user_timeline();
 
 // Funcion que se encarga de ingresar a la lista timeline del usuario dado por
 // argumento o en otro caso la lista de twwets del usuario.
-void print_messages(const char*);
+void print_messages(char*);
 
 // Funcion para pasar una cadena a solo chars de tipo minuscula.
 void lowercase(char*);
 
 //
 int hash_function(char*);
+
 //
-void print_tweet(list_tweets);
+void print_tweet(struct list_tweets*);
+
 //
 void follow_user(char*);
 

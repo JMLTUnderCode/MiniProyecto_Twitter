@@ -11,7 +11,7 @@
 #define SLOTS_HASH 97 		// Longitud constante de la tabla de hash.
 #define SLOTS_TWEET 281 	// Numero maximo de caracteres para un tweet.
 #define MAX_INPUT 17 			// Numerom aximo de caracteres para el username/password
-#define OFFSET 50
+#define OFFSET 50 				// 
 
 struct user_data; 				// Nodo informativo de un usuario.
 struct info_tweets; 			// Nodo informativo de un tweet.
