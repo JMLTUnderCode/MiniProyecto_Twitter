@@ -62,7 +62,8 @@ void lowercase(char*);
 
 //
 int hash_function(char*);
-
+//
+void print_tweet(list_tweets);
 //
 void follow_user(char*);
 
