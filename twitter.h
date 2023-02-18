@@ -18,7 +18,7 @@ int valid_len(const char*);
 
 // Funcion que se encarga de gestionar la informacion dada por el usuario. 
 // Permite en funcion de la opcion dada ir a su respectiva funcion.
-void user_input();
+void user_input(int);
 
 // Funcion que permite concluir algun proceso, como registrarse y Deslogear
 // al usuario.
@@ -47,7 +47,7 @@ void add_tweet();
 // Funcion que permite buscar en la estructura de datos al user y password
 // tal que su cuenta sea correcta. Se retorna TRUE en caso afirmativo, de lo
 // contrario FALSE. Con TRUE, FALSE definida por macros.
-int user_validation(const char*);
+int user_validation(char*);
 
 // Funcion que permite mostrar el timeline del usuario una vez que este haya
 // ingresado con exito.

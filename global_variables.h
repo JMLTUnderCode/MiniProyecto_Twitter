@@ -23,6 +23,38 @@ typedef struct info_tweets info_tweets;
 typedef struct list_users list_users;
 typedef struct list_tweets list_tweets;
 
+/***************************************************************/
+// ESTRUCTURAS TIPO NODO INFORMATIVO.
+struct info_tweets{
+	char user[MAX_INPUT];
+	tm_t *time;
+	char message[SLOTS_TWEET];
+};
+
+struct user_data{
+	list_tweets *tweets;
+ 	list_users *following; 
+	list_users *followers;
+	list_tweets *timeline;
+	char user[MAX_INPUT];
+	int password_h;
+} user_data_df = {NULL, NULL ,NULL, NULL};
+
+/***************************************************************/
+// LISTAS ENLAZADAS
+struct list_users{
+	int id;
+	list_users *next;
+	user_data nodo;
+} list_users_df = {0, NULL};
+
+struct list_tweets{
+	list_tweets *next;
+	info_tweets tweets;
+} list_tweets_df = {NULL};
+
+/***************************************************************/
+
 // Definicion, inicializacion y estructuras de datos.
 char user_option[10];			// Para las  opciones que toma el user.(login, signup, etc)
 char username[17]; 				// Para username del usuario, MAX 16 Chars.
@@ -33,40 +65,8 @@ user_data *INFO_USER; 		// Informacion clobal del usuario que esta logeado.
 // Definicion de HashTable y funciones para la misma.
 list_users *HashTable[SLOTS_HASH];
 
-void add_node(char); 						// Agrega un nodo de tipo USER_DATA a la tabla.
+void add_node(char*); 						// Agrega un nodo de tipo USER_DATA a la tabla.
 int search_node(char*); 	// Busca un nodo de tipo USER_DATA en la tabla.
 
-/***************************************************************/
-// ESTRUCTURAS TIPO NODO INFORMATIVO.
-struct info_tweets{
-	char user[MAX_INPUT];
-	tm_t *time;
-	char message[SLOTS_TWEET];
-};
-
-struct user_data{
-	char user;
-	int password_h;
-	info_tweets *tweets;
- 	list_users *following; 
-	list_users *followers;
-	info_tweets *timeline;
-};
 
 
-/***************************************************************/
-// LISTAS ENLAZADAS
-struct list_users{
-	int id;
-	user_data nodo;
-	list_users *next;
-};
-
-struct list_tweets{
-	info_tweets tweets;
-	list_tweets *next;
-};
-
-
-
-/***************************************************************/

@@ -20,6 +20,49 @@ int hash_function(char *key){
 	return accum % SLOTS_HASH;
 }
 
+void add_node(char* u_name){
+	list_users *newUser = (list_users*)malloc(sizeof(list_users));	
+	int k_user = hash_function(u_name);
+	int k_pass = hash_function(password);
+	newUser->nodo.password_h = k_pass;
+	strncpy(newUser->nodo.user, u_name, 17);
+	newUser->next = NULL;
+
+	if( HashTable[k_user]->id != 0) {
+		list_users *temp = HashTable[k_user];
+		while( temp->next != NULL)
+			temp = temp->next;
+		temp->next = newUser;
+
+	} else {
+		newUser->id = 1;
+		HashTable[k_user] = newUser;
+	}
+
+	HashTable[k_user]->nodo.tweets = &list_tweets_df;
+	HashTable[k_user]->nodo.timeline = &list_tweets_df;
+}
+
+int search_node(char* str){
+	int k_user = hash_function(str);
+
+	if( HashTable[k_user]->id != 0 ){
+		list_users *temp = HashTable[k_user];
+		while( temp != NULL ){
+			if(strcmp(temp->nodo.user, str )==0 ){
+				INFO_USER = &temp->nodo;
+				return TRUE;
+			} else {
+				temp = temp->next;
+			}
+		}
+		return FALSE;
+
+	} else {
+		return FALSE;
+	}
+}
+
 // Funcion que muestra la interfaz base del programa. Nombre de la 
 // App simulada, prompt base y solicitud de datos.
 void initial_interfaz(){
@@ -31,7 +74,8 @@ void initial_interfaz(){
 	printf("|* -> DON'T MISS WHAT'S HAPPENING!                      *|\n");
 	printf("|* ->  Login, SignUp or Leave: ");
 
-	user_input();
+	user_input(1);
+	return;
 }
 
 // Funcion que limpiar el Buffer del teclado extrayendo todos lso caracteres 
@@ -58,15 +102,10 @@ void name_pass(){
 			break;
 	}
 	lowercase(username);
-	if(user_validation(username) && (strcmp(user_option, "signup")==0)) {
-		printf("|* -> Error: User already exists.*|\n");
+	if(!user_validation(username)){
 		Goto_init();
-
-	} else if ( !user_validation(username) && (strcmp(user_option, "login")==0)){
-		printf("|* -> Error: Incorrect user or password.                 *|\n");
-		Goto_init();
+		return;
 	}
-	user_validation(username);
 }
 
 // Funcion que se encarga de check el userinput del usarname y password, dado
@@ -82,33 +121,46 @@ int valid_len(const char* str){
 
 // Funcion que se encarga de gestionar la informacion dada por el usuario. 
 // Permite en funcion de la opcion dada ir a su respectiva funcion.
-void user_input(){
+void user_input(int type){
 	fflush(stdin);
 	scanf("%s", user_option);
-	lowercase(user_option);		
-	if(strcmp(user_option, "login")==0)
-		name_pass();
-
-	else if(strcmp(user_option, "signup")==0)
-		signup();
-
-	else if(strcmp(user_option, "leave")==0)
-		leave();
-
-	else if(strcmp(user_option, "logout")==0)
-		logout();
-
-	else if( user_option[0] == '+' )
-		add_tweet();
-
-	else if( user_option[0] == '@' )
-		goto_perfil();
-
-	else {
+	lowercase(user_option);
+	if(type == 1) {
+		if(strcmp(user_option, "login")==0){
+			name_pass();
+			user_timeline();
+			return;
+		} else if(strcmp(user_option, "signup")==0) {
+			signup();
+			Goto_init();
+			return;
+		}else if(strcmp(user_option, "leave")==0) {
+			leave();
+			return;
+		} else {
 			printf("|* -> Error! Available Options is:                      *|\n"); 
-			printf("|* -> Login, Signup, Leave, +, @, Logout.               *|\n");
+			printf("|* -> Login, Signup, Leave.                             *|\n");
 			printf("|* -> Try again: ");
-			user_input();
+			user_input(1);
+		}
+	} else {
+		if(strcmp(user_option, "logout")==0){
+			logout();
+			return;
+		}
+		else if( user_option[0] == '+' ){
+			add_tweet();
+			user_timeline();
+			return;
+		} else if( user_option[0] == '@' ){
+			goto_perfil();
+			return;
+		} else {
+			printf("|* -> Error! Available Options is:                      *|\n"); 
+			printf("|* ->  +, @, Logout.                                    *|\n");
+			printf("|* -> Try again: ");
+			user_input(2);
+		}
 	}
 }
 
@@ -137,6 +189,7 @@ void signup(){
 	
 	// Solicitamos datos para registrar.
 	name_pass();
+	add_node(username);
 
 	printf("|*                                                      *|\n");
 	printf("|* -> Registration Completed!                           *|\n");	
@@ -147,7 +200,6 @@ void signup(){
 	printf("|* -> Do not forget!                                    *|\n");
 	printf("|*                                                      *|\n");
 	
-	Goto_init();
 }
 
 // Funcion que permite Deslogear a un usuario de Twitter y llevarlo a la interfaz inicial
@@ -168,6 +220,7 @@ void leave(){
 	printf("|*                                                      *|\n");
 	printf("|********************************************************|\n");
 	printf("`--------------------------------------------------------`\n");
+	system("exit");
 }
 
 // Funcion que transforma a minusculas una cadena.
@@ -187,13 +240,16 @@ void goto_perfil(){
 	if(user_validation(&user_temp))
 		print_messages(&user_temp);
 	else {
-		printf("|* -> Error: User not found.                          *|\n");
+		printf("|* -> Error: User not found.                            *|\n");
 		printf("|* -> Do you want to try again?[Y/n]: ");
 		scanf("%s", &opt);
-		if( strcmp(&opt, "y") || strcmp(&opt, "Y"))
+		if( strcmp(&opt, "y")==0 || strcmp(&opt, "Y")==0){
 			goto_perfil();
-		else
+			return;
+		}else{
 			user_timeline();
+			return;
+		}
 	}
 	
 	while(TRUE){
@@ -205,16 +261,16 @@ void goto_perfil(){
 		lowercase(&opt);
 		if( strcmp(&opt, "follow") == 0 ) {
 			// funcion follow
-			break;
+			return;
 		} else if ( strcmp(&opt, "back") == 0 ) {
-			user_timeline(username);
-			break;
+			user_timeline();
+			return;
 		} else if ( strcmp(&opt, "logout") == 0 ) {
 			logout();
-			break;
+			return;
 		} else if ( strcmp(&opt, "@") == 0 ) {
 			goto_perfil();
-			break;
+			return;
 		}
 	}
 }
@@ -222,30 +278,50 @@ void goto_perfil(){
 // Funcion que permite agregar un nuevo tweet a la lista de tweets del usuaro
 // Loged.
 void add_tweet(){
-	time_t t_nt;
-	list_tweets* newTweet = (list_tweets*)malloc(sizeof(list_tweets)); 
-	char n_tweet[MAX_INPUT];
+	// Agregar tweet a la lista de tweets propios del usuario logeado.
+	list_tweets *newTweet = (list_tweets*)malloc(sizeof(list_tweets));
+	printf("|*                                                      *|\n");
+	printf("|* -> Enter tweet(Max. 280 chars): ");
+	
+	char n_t[SLOTS_TWEET];
+	scanf("%s", n_t);
 
-	fgets(n_tweet, MAX_INPUT, stdin);
+	if(strlen(n_t) == SLOTS_TWEET)
+		cleanBuffer(n_t);
 	
-	if(strlen(n_tweet)>MAX_INPUT){
-		cleanBuffer(n_tweet);
-	}
-	
+	strncpy(newTweet->tweets.message, n_t, SLOTS_TWEET);
+
+	time_t t_nt;
 	time(&t_nt);
 	
-	sscanf(INFO_USER->user, "%s", newTweet->tweets.user);
+	strncpy(newTweet->tweets.user, INFO_USER->user, MAX_INPUT);
 	newTweet->tweets.time = localtime(&t_nt);
-	sscanf(n_tweet, "%s", newTweet->tweets.message);
 
-	list_tweets* aux = INFO_USER->tweets;
+	list_tweets *list_aux = INFO_USER->tweets;
 
-	while(aux->next != NULL){
-		aux = aux->next;
+	while(list_aux->next != NULL)
+		list_aux = list_aux->next;
+	
+	list_aux->next = newTweet;
+	
+	// Agregar tweet a los timelines de los followers.
+	list_users *p_follows = INFO_USER->followers;
+	
+	printf("addtweet check 2\n");
+	// Se busca por todos los usuarios en la lista TINELINE
+	if( p_follows != NULL){
+		while( p_follows->id != 0) {
+			printf("addtweet check 3\n");
+			list_tweets *l_temp = p_follows->nodo.timeline;
+			while( l_temp->next != NULL )
+				l_temp = l_temp->next;
+		
+			l_temp->next = newTweet;
+		
+			p_follows = p_follows->next;
+		}
 	}
-
-	aux = newTweet;
-
+	printf("addtweet check final\n");
 	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
 	// no mas de 280 chars, es decir usar la funcion cleanBuffer.
 	// Agregar a la estructura de datos del usuario en lista tweets el mensaje.
@@ -257,7 +333,35 @@ void add_tweet(){
 // Funcion que permite buscar en la estructura de datos al user y password
 // tal que su cuenta sea correcta. Se retorna TRUE en caso afirmativo, de lo
 // contrario FALSE. Con TRUE, FALSE definida por macros.
-int user_validation(const char* str){
+int user_validation( char* str){
+	lowercase(user_option);
+	printf("CHECK VALID 1\n");	
+	// Si el usuario se encontro y estamos en modo login.
+	if( search_node(str) && strcmp(user_option, "login")==0 ){
+		printf("CHECK VALID 2\n");	
+		int t_key = hash_function(password);
+		// Si si coinciden las password.
+		if(INFO_USER->password_h == t_key)
+			return TRUE;
+		// Sino coinciden las password
+		else {
+			printf("incorrect 1\n");
+			printf("|* -> Error: Incorrect user or password.                 *|\n");
+			return FALSE;
+		}
+	// Sino encontramos el usuario y estamos en modo login.
+	} else if ( !search_node(str) && (strcmp(user_option, "login")==0)){
+			printf("incorrect 2\n");
+			printf("|* -> Error: Incorrect user or password.                 *|\n");
+			return FALSE;
+	// Sino encontramos el usuario y estamos en modo signup.
+	} else if ( !search_node(str) && (strcmp(user_option, "signup")==0)){
+			return TRUE;
+	// Si encontramos al usuario y entamos en modo signup.
+	} else if ( search_node(str) && (strcmp(user_option, "signup")==0)){
+			printf("|* -> Error: User already exists.*|\n");
+			return FALSE;
+	}
 
 	// Hacer uso de la variable user_option para saber en que caso estamos
 	// login o signup para realizar las respectivos retornos.
@@ -265,8 +369,6 @@ int user_validation(const char* str){
 	// En caso de TRUE y modo LOGIN almacenar en la variable global 
 	// INFO_USER el apuntador
 	// a dicha estructura de dato.
-
-	return TRUE;
 }
 
 // Funcion que permite motrar el timeline del usuario una vez este haya
@@ -281,13 +383,13 @@ void user_timeline(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Tweets Timeline:                                  *|\n");
 	printf("|*                                                      *|\n");
-	
+
 	print_messages(username);
-	
+
 	printf("|*                                                      *|\n");
 	printf("|* -> WHAT'S HAPPENING?                                 *|\n");
 	printf("|* ->  + (add tweet), @ (Go to perfil of), Logout: ");
-	user_input();
+	user_input(2);
 }
 
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
@@ -300,6 +402,11 @@ void print_messages(const char* str){
 	}
 }
 int main(){
+	for(int k = 0; k < SLOTS_HASH; k++){
+		HashTable[k] = &list_users_df;
+		HashTable[k]->nodo = user_data_df;
+	}
+
 	initial_interfaz();
 	
 	return EXIT_SUCCESS;
