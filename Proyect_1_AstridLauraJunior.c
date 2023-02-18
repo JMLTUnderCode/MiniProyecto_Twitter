@@ -32,6 +32,7 @@ void add_node(char* u_name){
 		list_users *temp = HashTable[k_user];
 		while( temp->next != NULL)
 			temp = temp->next;
+		newUser->id = temp->id + 1;
 		temp->next = newUser;
 
 	} else {
@@ -86,18 +87,27 @@ void cleanBuffer(const char* str){
 		while(getchar() != '\n');
 }
 
+void cleanBufferV2(){
+	int c;
+	do{
+		c = getchar();
+	}while( c != EOF && c != '\n');
+}
+
 // Funcion encargada en solicitar por pantalla el username y password al 
 // usuario por standardInput.
 void name_pass(){
 	while(TRUE){
 		fflush(stdin);
 		printf("|* -> USERNAME(Min. 8 - Max. 16 chars): "); scanf("%s", username);
+		cleanBufferV2();
 		if(valid_len(username)) 
 			break;
 	}
 	while(TRUE){
 		fflush(stdin);
 		printf("|* -> PASSWORD(Min. 8 - Max. 16 Chars): "); scanf("%s", password);
+		cleanBufferV2();
 		if(valid_len(password)) 
 			break;
 	}
@@ -124,6 +134,7 @@ int valid_len(const char* str){
 void user_input(int type){
 	fflush(stdin);
 	scanf("%s", user_option);
+	cleanBufferV2();
 	lowercase(user_option);
 	if(type == 1) {
 		if(strcmp(user_option, "login")==0){
@@ -236,13 +247,15 @@ void goto_perfil(){
 	char opt;
 	printf("|*                                                      *|\n");
 	printf("|* -> Enter user: @"); scanf("%s", &user_temp);
-	
+	cleanBufferV2();
+
 	if(user_validation(&user_temp))
 		print_messages(&user_temp);
 	else {
 		printf("|* -> Error: User not found.                            *|\n");
 		printf("|* -> Do you want to try again?[Y/n]: ");
 		scanf("%s", &opt);
+		cleanBufferV2();
 		if( strcmp(&opt, "y")==0 || strcmp(&opt, "Y")==0){
 			goto_perfil();
 			return;
@@ -258,6 +271,7 @@ void goto_perfil(){
 		printf("|* ->  Follow, Back, Logout, @ (Go to perfil)           *|\n");
 		printf("|* -> Option: ");
 		scanf("%s", &opt);
+		cleanBufferV2();
 		lowercase(&opt);
 		if( strcmp(&opt, "follow") == 0 ) {
 			// funcion follow
@@ -284,7 +298,7 @@ void add_tweet(){
 	printf("|* -> Enter tweet(Max. 280 chars): ");
 	
 	char n_t[SLOTS_TWEET];
-	scanf("%s", n_t);
+	fgets(n_t, SLOTS_TWEET, stdin);
 
 	if(strlen(n_t) == SLOTS_TWEET)
 		cleanBuffer(n_t);
@@ -293,41 +307,42 @@ void add_tweet(){
 
 	time_t t_nt;
 	time(&t_nt);
-	
+
 	strncpy(newTweet->tweets.user, INFO_USER->user, MAX_INPUT);
 	newTweet->tweets.time = localtime(&t_nt);
+	newTweet->next = NULL;
 
-	list_tweets *list_aux = INFO_USER->tweets;
-
-	while(list_aux->next != NULL)
-		list_aux = list_aux->next;
+	if(INFO_USER->tweets->id != 0){
+		list_tweets *list_aux = INFO_USER->tweets;
 	
-	list_aux->next = newTweet;
+		while(list_aux->next != NULL)
+			list_aux = list_aux->next;
+		newTweet->id = list_aux->id + 1;
+		list_aux->next = newTweet;
+	} else { 
+		newTweet->id = 1;
+		INFO_USER->tweets = newTweet;
+	}
 	
-	// Agregar tweet a los timelines de los followers.
-	list_users *p_follows = INFO_USER->followers;
-	
-	printf("addtweet check 2\n");
 	// Se busca por todos los usuarios en la lista TINELINE
-	if( p_follows != NULL){
+	if(INFO_USER->followers != NULL){
+		list_users *p_follows = INFO_USER->followers;
+
 		while( p_follows->id != 0) {
-			printf("addtweet check 3\n");
 			list_tweets *l_temp = p_follows->nodo.timeline;
-			while( l_temp->next != NULL )
-				l_temp = l_temp->next;
-		
-			l_temp->next = newTweet;
-		
+			if(l_temp != NULL){
+				while( l_temp->id != 0)
+					l_temp = l_temp->next;
+			
+				newTweet->id = l_temp->id + 1;
+				l_temp->next = newTweet;
+			} else {
+				newTweet->id = 1;
+				p_follows->nodo.timeline = newTweet;
+			}
 			p_follows = p_follows->next;
 		}
 	}
-	printf("addtweet check final\n");
-	// Sew debe leer por pantalla el mensaje, luego asegurarse de que se lean 
-	// no mas de 280 chars, es decir usar la funcion cleanBuffer.
-	// Agregar a la estructura de datos del usuario en lista tweets el mensaje.
-	// Similarmente se debe agregar este tweets a los timeline de los followers
-	// del usuario acutal.
-	//
 }
 
 // Funcion que permite buscar en la estructura de datos al user y password
@@ -335,10 +350,8 @@ void add_tweet(){
 // contrario FALSE. Con TRUE, FALSE definida por macros.
 int user_validation( char* str){
 	lowercase(user_option);
-	printf("CHECK VALID 1\n");	
 	// Si el usuario se encontro y estamos en modo login.
 	if( search_node(str) && strcmp(user_option, "login")==0 ){
-		printf("CHECK VALID 2\n");	
 		int t_key = hash_function(password);
 		// Si si coinciden las password.
 		if(INFO_USER->password_h == t_key)
@@ -401,11 +414,17 @@ void print_messages(const char* str){
 		
 	}
 }
+
+void follow_user(char *str ){
+
+}
+
 int main(){
 	for(int k = 0; k < SLOTS_HASH; k++){
 		HashTable[k] = &list_users_df;
 		HashTable[k]->nodo = user_data_df;
 	}
+	INFO_USER = &user_data_df;
 
 	initial_interfaz();
 	

@@ -4,6 +4,7 @@
 #include <time.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <unistd.h>
 
 #define TRUE (0==0)  			// Macro de TRUE del lenguaje.
 #define FALSE !TRUE 			// Macro de FALSE del lenguaje.
@@ -49,9 +50,10 @@ struct list_users{
 } list_users_df = {0, NULL};
 
 struct list_tweets{
+	int id;
 	list_tweets *next;
 	info_tweets tweets;
-} list_tweets_df = {NULL};
+} list_tweets_df = {0, NULL};
 
 /***************************************************************/
 
