@@ -29,7 +29,7 @@ typedef struct list_tweets list_tweets;
 // ESTRUCTURAS TIPO NODO INFORMATIVO.
 struct info_tweets{
 	char user[MAX_INPUT];
-	tm_t *time;
+	char time[25];
 	char message[SLOTS_TWEET];
 };
 

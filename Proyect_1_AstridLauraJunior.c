@@ -175,7 +175,6 @@ int name_pass(){
 		Goto_init();
 		return FALSE;
 	}
-
 	return TRUE;
 }
 
@@ -269,6 +268,7 @@ void goto_perfil(){
 		printf("|*                                                      *|\n");
 		printf("|* -> Enter user: @"); scanf("%s", user_temp);
 		cleanBufferV2();
+		printf("|*                                                      *|\n");
 
 		if(user_validation(user_temp)){
 			print_messages(user_temp);
@@ -294,9 +294,9 @@ void goto_perfil(){
 		lowercase(user_option);
 		if( strcmp(user_option, "follow") == 0 ) {
 			follow_user(user_temp);	
-		} else if ( strcmp(user_option, "goback") == 0 ) {
-			//user_timeline();
+		} else if ( strcmp(user_option, "goback") == 0 ) {	
 			return;
+
 		} else if ( strcmp(user_option, "logout") == 0 ) {
 			logout();
 			return;
@@ -315,19 +315,23 @@ void add_tweet(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Enter tweet(Max. 280 chars): ");
 	
-	//char n_t[SLOTS_TWEET];
 	fgets(newTweet->tweets.message, SLOTS_TWEET, stdin);
 
 	if(strlen(newTweet->tweets.message) == SLOTS_TWEET)
 		cleanBuffer(newTweet->tweets.message);
 	
-	//strncpy(newTweet->tweets.message, n_t, SLOTS_TWEET);
-	//
 	strncpy(newTweet->tweets.user, INFO_USER->user, MAX_INPUT);
-	time_t t_nt;
-	newTweet->tweets.time = localtime(&t_nt);
-	newTweet->next = NULL;
 
+	struct tm *a_time;
+	time_t t_nt;
+	t_nt = time(NULL);
+	a_time = localtime(&t_nt);
+	char format[25];
+	strftime(format, 25, "%X%p - %D" , a_time);
+	strncpy(newTweet->tweets.time, format, 25);
+
+	newTweet->next = NULL;
+	
 	if( INFO_USER->tweets != NULL ){
 		list_tweets *list_aux = INFO_USER->tweets;
 	
@@ -338,7 +342,6 @@ void add_tweet(){
 	} else { 
 		newTweet->id = 1;
 		INFO_USER->tweets = newTweet;
-		printf("CHECK MESS 1: %s\n\n", INFO_USER->tweets->tweets.message);
 	}
 	
 	// Se busca por todos los usuarios en la lista TIMELINE
@@ -354,20 +357,15 @@ void add_tweet(){
 					break;
 				aux = aux->next;
 			}
-			aux->nodo.timeline = newTweet;
+			if(aux->nodo.timeline != NULL){
+				list_tweets *aux_t = aux->nodo.timeline;
+				while( aux_t->next != NULL )
+					aux_t = aux_t->next;
 
-			/*if(l_temp != NULL){
-				while( l_temp->next != NULL)
-					l_temp = l_temp->next;
-			
-				newTweet->id = l_temp->id + 1;
-				l_temp->next = newTweet;
+				aux_t = newTweet;
 			} else {
-				newTweet->id = 1;
-				p_follows->nodo.timeline = newTweet;
-				printf("CHECK MESS 2: %s\n", INFO_USER->followers->nodo.timeline->tweets.message);
-				
-			}*/
+				aux->nodo.timeline = newTweet;
+			}
 
 			p_follows = p_follows->next;
 		}
@@ -422,6 +420,8 @@ int user_validation( char* str){
 // ingresado con exito.
 void user_timeline(){
 	while (TRUE){
+		if(strcmp(user_option,"logout")==0)
+			return;
 		system("clear");
 		char aux[18] = "@";
 		strcat(aux, username);
@@ -431,13 +431,14 @@ void user_timeline(){
 		printf("|*                                                      *|\n");
 		printf("|* -> Tweets Timeline:                                  *|\n");
 		printf("|*                                                      *|\n");
-		printf("user     : %s\n", INFO_USER->user);
+		/*printf("user     : %s\n", INFO_USER->user);
 		printf("pass h   : %d\n", INFO_USER->password_h);
 		printf("timeline : %d\n", INFO_USER->timeline==NULL);
 		printf("tweets   : %d\n", INFO_USER->tweets==NULL);
 		printf("followers: %d\n", INFO_USER->followers==NULL);
 		printf("following: %d\n", INFO_USER->following==NULL);
-
+		*/
+		
 		print_messages(username);
 
 		printf("|*                                                      *|\n");
@@ -466,7 +467,6 @@ void user_timeline(){
 			add_tweet();
 		} else if( user_option[0] == '@' ){
 			goto_perfil();
-			//break;
 		}
 	}
 	return;
@@ -475,10 +475,9 @@ void user_timeline(){
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
 // signup los tweets.
 void print_messages(char* str){
-	printf("CHECK OPTION: %s\n", user_option);
 	
 	// Imprimir timeline del usuario actual.
-	if(strcmp(user_option, "login")==0 && strcmp(str, username)==0){
+	if((strcmp(user_option, "login")==0 || user_option[0]=='+') && strcmp(str, username)==0){
 		if(INFO_USER->timeline != NULL)
 			print_tweet(INFO_USER->timeline);
 		else {	
@@ -486,7 +485,7 @@ void print_messages(char* str){
 				printf("|* -> Your timeline is empty now.                       *|\n");
 			}
 	// Imprimir tweets de otra usuario.
-	}else if (user_option[0] == '@' && strcmp(str, username) != 0 ){
+	}else if (user_option[0]=='@' && strcmp(str, username)!=0 ){
 		if(INFO_FUSER->tweets != NULL)
 			print_tweet(INFO_FUSER->tweets);
 		else{
@@ -495,7 +494,7 @@ void print_messages(char* str){
 			
 		}
 	// Imprimir tweets del usuario actual.
-	} else if(user_option[0] == '@' && strcmp(str, username)==0 ){
+	} else if(user_option[0]=='@' && strcmp(str, username)==0 ){
 		if(INFO_USER->tweets != NULL){
 			print_tweet(INFO_USER->tweets);
 		} else {
@@ -509,20 +508,22 @@ void print_tweet(list_tweets *temp){
 
 	while(temp != NULL){
 		char aux[18] = "@";
-		char format_time[25];
-		strftime(format_time, 25, "%X%p - %x", temp->tweets.time );
 		strcat(aux, temp->tweets.user);
 
-		printf("|*------------------------------------------------------*|\n");
-		printf("|*  %17s        %25s  *|\n",aux, format_time);
+		printf("|*  %17s        %25s  *|\n",aux, temp->tweets.time);
 		
 		char usertweet[SLOTS_TWEET];
 		strncpy(usertweet, temp->tweets.message, SLOTS_TWEET);
+		usertweet[strcspn(usertweet, "\n")] = 0;
 		while (strlen(usertweet) > 50 ){  
 			printf("|*  %.50s  *|\n",usertweet);
 			memmove(usertweet, usertweet+OFFSET, strlen(usertweet)+1-OFFSET);
 		}
-		printf("|*  %.50s  *|\n",usertweet);
+		printf("|*  %.50s", usertweet);
+		for(int k = 0; k < 50 - strlen(usertweet); k++)
+			printf(" ");
+		printf("  *|\n");
+		printf("|*------------------------------------------------------*|\n");
 		temp = temp->next;
 	}
 }
@@ -535,17 +536,7 @@ void follow_user(char *str){
 		printf("|*                                                      *|\n");
 		return;
 	}
-	/*
-	int h_usert = hash_function(str);
-	
-	list_users *new_fuser = HashTable[h_usert];
-	while(new_fuser->id != 0){
-		if( strcmp(new_fuser->nodo.user, str)==0 )
-			break;
-		new_fuser = new_fuser->next;
-	}
-	*/
-	
+
 	list_users *new_follow = (list_users*)malloc(sizeof(list_users));
 	new_follow->next = NULL;
 
@@ -560,7 +551,6 @@ void follow_user(char *str){
 		new_follow->nodo = *INFO_FUSER;
 		INFO_USER->following = new_follow;
 	}
-	printf("SIGUIENDOS DEL MAIN: %s\n", INFO_USER->following->nodo.user);
 
 	// Agregar a la lista de SEGUIDORES del usuario a seguir.
 	if(INFO_FUSER->followers != NULL) {
@@ -573,8 +563,6 @@ void follow_user(char *str){
 		new_follow->nodo = *INFO_USER;
 		INFO_FUSER->followers = new_follow;	
 	}
-
-	printf("SIGUIDORES DE USER A SEGUIR: %s\n", INFO_FUSER->followers->nodo.user);
 
 	printf("|*                                                      *|\n");
 	printf("|* -> Following success!                                *|\n");
