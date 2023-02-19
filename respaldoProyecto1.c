@@ -20,21 +20,6 @@ int hash_function(char *key){
 	return accum % SLOTS_HASH;
 }
 
-// Funcion que limpiar el Buffer del teclado extrayendo todos lso caracteres 
-// sobrantes hasta conseguir el '\n' que representa el presionar ENTER.
-void cleanBuffer(const char* str){
-	int toint = (int)(str[strlen(str)-1]);
-	if(toint != 10 &&  toint != 0) 
-		while(getchar() != '\n');
-}
-
-void cleanBufferV2(){
-	int c;
-	do{
-		c = getchar();
-	}while( c != EOF && c != '\n');
-}
-
 void add_node(char* u_name){
 	list_users *newUser = (list_users*)malloc(sizeof(list_users));	
 	int k_user = hash_function(u_name);
@@ -82,53 +67,60 @@ int search_node(char* str){
 // Funcion que muestra la interfaz base del programa. Nombre de la 
 // App simulada, prompt base y solicitud de datos.
 void initial_interfaz(){
-	while(TRUE){
-		system("clear");
-		printf(".--------------------------------------------------------.\n");
-		printf("|********************************************************|\n");
-		printf("|*                  -=-   TWITTER   -=-                 *|\n");
-		printf("|*                                                      *|\n");
-		printf("|* -> DON'T MISS WHAT'S HAPPENING!                      *|\n");
-		printf("|* ->  Login, SignUp or Leave: ");
+	system("clear");
+	printf("|* .'````````````````````````````````````````````````'. *|\n");
+	printf("|*.^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^.*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^````^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^`'^^^^^^^^^^^^^^^^`'.       .``''.`^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^  .'^^^^^^^^^^^^^'              .''`^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^`     .`^^^^^^^^^`                .`^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^.       ..'`^^^^.               `^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^.             .               .^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^` ..                            .^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^'                              `^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^`.                           .^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^`'.                        .^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^.                        .^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^`.                     `^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^`.                '^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^````''.                .`^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^`'..               .'`^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^``''''''''``^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
+	printf("|* '``^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^``' *|\n");
+	printf(".--------------------------------------------------------.\n");
+	printf("|********************************************************|\n");
+	printf("|*                  -=-   TWITTER   -=-                 *|\n");
+	printf("|*                                                      *|\n");
+	printf("|* -> DON'T MISS WHAT'S HAPPENING!                      *|\n");
+	printf("|* ->  Login, SignUp or Leave: ");
 
-		while (TRUE){
-			fflush(stdin);
-			scanf("%s", user_option);
-			cleanBufferV2();
-			lowercase(user_option);
-			if(strcmp(user_option, "login")==0){
-				if(name_pass()){
-					user_timeline();
-					break;
-				}
-				break;
-			} else if(strcmp(user_option, "signup")==0) {
-				signup();
-				Goto_init();
-				break;
-			}else if(strcmp(user_option, "leave")==0) {
-				leave();
-				break;
-			} else {
-				printf("|* -> Error! Available Options is:                      *|\n"); 
-				printf("|* -> Login, Signup, Leave.                             *|\n");
-				printf("|* -> Try again: ");
-			}
-
-		}
-		if(strcmp(user_option, "leave") == 0){
-			break;
-		}
-	}
+	user_input(1);
+	return;
 }
-	
 
+// Funcion que limpiar el Buffer del teclado extrayendo todos lso caracteres 
+// sobrantes hasta conseguir el '\n' que representa el presionar ENTER.
+void cleanBuffer(const char* str){
+	int toint = (int)(str[strlen(str)-1]);
+	if(toint != 10 &&  toint != 0) 
+		while(getchar() != '\n');
+}
 
-
+void cleanBufferV2(){
+	int c;
+	do{
+		c = getchar();
+	}while( c != EOF && c != '\n');
+}
 
 // Funcion encargada en solicitar por pantalla el username y password al 
 // usuario por standardInput.
-int name_pass(){
+void name_pass(){
 	while(TRUE){
 		fflush(stdin);
 		printf("|* -> USERNAME(Min. 8 - Max. 16 chars): "); scanf("%s", username);
@@ -146,10 +138,8 @@ int name_pass(){
 	lowercase(username);
 	if(!user_validation(username)){
 		Goto_init();
-		return FALSE;
+		return;
 	}
-
-	return TRUE;
 }
 
 // Funcion que se encarga de check el userinput del usarname y password, dado
@@ -165,6 +155,49 @@ int valid_len(const char* str){
 
 // Funcion que se encarga de gestionar la informacion dada por el usuario. 
 // Permite en funcion de la opcion dada ir a su respectiva funcion.
+void user_input(int type){
+	fflush(stdin);
+	scanf("%s", user_option);
+	cleanBufferV2();
+	lowercase(user_option);
+	if(type == 1) {
+		if(strcmp(user_option, "login")==0){
+			name_pass();
+			user_timeline();
+			return;
+		} else if(strcmp(user_option, "signup")==0) {
+			signup();
+			Goto_init();
+			return;
+		}else if(strcmp(user_option, "leave")==0) {
+			leave();
+			return;
+		} else {
+			printf("|* -> Error! Available Options is:                      *|\n"); 
+			printf("|* -> Login, Signup, Leave.                             *|\n");
+			printf("|* -> Try again: ");
+			user_input(1);
+		}
+	} else {
+		if(strcmp(user_option, "logout")==0){
+			logout();
+			return;
+		}
+		else if( user_option[0] == '+' ){
+			add_tweet();
+			user_timeline();
+			return;
+		} else if( user_option[0] == '@' ){
+			goto_perfil();
+			return;
+		} else {
+			printf("|* -> Error! Available Options is:                      *|\n"); 
+			printf("|* ->  +, @, Logout.                                    *|\n");
+			printf("|* -> Try again: ");
+			user_input(2);
+		}
+	}
+}
 
 // Funcion que permite concluir algun proceso, como registrarse y Deslogear
 // al usuario.
@@ -174,8 +207,9 @@ void Goto_init(){
 	// Limpiamos y detenemos output.
 	fflush(stdout);
 	system("bash -c \"read -sn 1\"");	
+
 	// Vamos al prompt inicial del programa.
-	return;
+	initial_interfaz();
 }
 
 // En caso de el usuario ingresar "signup" se deben solicitar los prompt de 
@@ -209,7 +243,8 @@ void logout(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Logout Successful!                                *|\n");
 	printf("|*                                                      *|\n");
-	return;
+
+	Goto_init();
 }
 
 // En caso de el usuario ingresar "leave" se debe "cerrar"/culminar
@@ -231,45 +266,46 @@ void lowercase(char* str){
 
 // Funcion que permite mostrar por pantalla el perfil de un usuario.
 void goto_perfil(){
+	
 	char user_temp;
-	char opt;
-	while(TRUE){
-		
-		printf("|*                                                      *|\n");
-		printf("|* -> Enter user: @"); scanf("%s", &user_temp);
-		cleanBufferV2();
+	printf("|*                                                      *|\n");
+	printf("|* -> Enter user: @"); scanf("%s", &user_temp);
+	cleanBufferV2();
 
-		if(user_validation(&user_temp)){
-			print_messages(&user_temp);
-			break;
-		} else{
-			printf("|* -> Error: User not found.                            *|\n");
-			printf("|* -> Do you want to try again?[Y/n]: ");
-			scanf("%s", &opt);
-			cleanBufferV2();
-			if( strcmp(&opt, "n")==0 || strcmp(&opt, "N")==0){
-				return;
-			}
-		}
-	}
-	while(TRUE){
-		printf("|*                                                      *|\n");
-		printf("|* -> What do you want to do?                              *|\n");
-		printf("|* ->  Follow, GoBack, Logout, @ (Go to another profile)*|\n");
-		printf("|* -> Option: ");
-		scanf("%s", &opt);
+	if(user_validation(&user_temp))
+		print_messages(&user_temp);
+	else {
+		printf("|* -> Error: User not found.                            *|\n");
+		printf("|* -> Do you want to try again?[Y/n]: ");
+		scanf("%s", user_option);
 		cleanBufferV2();
-		lowercase(&opt);
-		if( strcmp(&opt, "follow") == 0 ) {
-			// funcion follow
+		if( strcmp(user_option, "y")==0 || strcmp(user_option, "Y")==0){
+			goto_perfil();
 			return;
-		} else if ( strcmp(&opt, "goback") == 0 ) {
+		}else{
 			user_timeline();
 			return;
-		} else if ( strcmp(&opt, "logout") == 0 ) {
+		}
+	}
+	
+	while(TRUE){
+		printf("|*                                                      *|\n");
+		printf("|* -> What do you want to do?                           *|\n");
+		printf("|* -> Follow, GoBack, Logout, @ (Go to another profile) *|\n");
+		printf("|* -> Option: ");
+		scanf("%s", user_option);
+		cleanBufferV2();
+		lowercase(user_option);
+		if( strcmp(user_option, "follow") == 0 ) {
+			follow_user(&user_temp);
+			return;
+		} else if ( strcmp(user_option, "back") == 0 ) {
+			user_timeline();
+			return;
+		} else if ( strcmp(user_option, "logout") == 0 ) {
 			logout();
 			return;
-		} else if ( strcmp(&opt, "@") == 0 ) {
+		} else if ( strcmp(user_option, "@") == 0 ) {
 			goto_perfil();
 			return;
 		}
@@ -330,6 +366,13 @@ void add_tweet(){
 			p_follows = p_follows->next;
 		}
 	}
+	printf("|*                                                       *|\n");
+	printf("|* -> Tweet add success!                                 *|\n");
+	printf("|*                                                       *|\n");
+	
+	printf("|* -> Press any key to continue...");
+	fflush(stdout);
+	system("bash -c \"read -sn 1\"");	
 }
 
 // Funcion que permite buscar en la estructura de datos al user y password
@@ -345,13 +388,11 @@ int user_validation( char* str){
 			return TRUE;
 		// Sino coinciden las password
 		else {
-			printf("incorrect 1\n");
 			printf("|* -> Error: Incorrect user or password.                 *|\n");
 			return FALSE;
 		}
 	// Sino encontramos el usuario y estamos en modo login.
 	} else if ( !search_node(str) && (strcmp(user_option, "login")==0)){
-			printf("incorrect 2\n");
 			printf("|* -> Error: Incorrect user or password.                 *|\n");
 			return FALSE;
 	// Sino encontramos el usuario y estamos en modo signup.
@@ -362,121 +403,101 @@ int user_validation( char* str){
 			printf("|* -> Error: User already exists.*|\n");
 			return FALSE;
 	}
-
-	// Hacer uso de la variable user_option para saber en que caso estamos
-	// login o signup para realizar las respectivos retornos.
-	//
-	// En caso de TRUE y modo LOGIN almacenar en la variable global 
-	// INFO_USER el apuntador
-	// a dicha estructura de dato.
 }
 
 // Funcion que permite motrar el timeline del usuario una vez este haya
 // ingresado con exito.
 void user_timeline(){
-	while (TRUE){
-		system("clear");
-		char aux[18] = "@";
-		strcat(aux, username);
-		printf(".--------------------------------------------------------.\n");
-		printf("|********************************************************|\n");
-		printf("|*        -=-   Welcome %17s   -=-         *|\n", aux);
-		printf("|*                                                      *|\n");
-		printf("|* -> Tweets Timeline:                                  *|\n");
-		printf("|*                                                      *|\n");
+	system("clear");
+	char aux[18] = "@";
+	strcat(aux, username);
+	printf(".--------------------------------------------------------.\n");
+	printf("|********************************************************|\n");
+	printf("|*        -=-   Welcome %17s   -=-         *|\n", aux);
+	printf("|*                                                      *|\n");
+	printf("|* -> Tweets Timeline:                                  *|\n");
+	printf("|*                                                      *|\n");
 
-		print_messages(username);
+	print_messages(username);
 
-		printf("|*                                                      *|\n");
-		printf("|* -> WHAT'S HAPPENING?                                 *|\n");
-		printf("|* ->  + (add tweet), @ (Go to perfil of), Logout: ");
-
-		while(TRUE){
-			fflush(stdin);
-			scanf("%s", user_option);
-			cleanBufferV2();
-			lowercase(user_option);
-
-			if(strcmp(user_option, "logout") == 0 || user_option[0] == '+' || user_option[0] == '@' ){
-				break;
-			}else{
-				printf("|* -> Error! Available Options is:                      *|\n"); 
-				printf("|* ->  +, @, Logout.                                    *|\n");
-				printf("|* -> Try again: ");
-			}
-		}	
-		if(strcmp(user_option, "logout") == 0){
-			logout();
-			break;
-		}else if( user_option[0] == '+' ){
-			add_tweet();
-		} else if( user_option[0] == '@' ){
-			goto_perfil();
-				
-
-		}
-	}
-		
+	printf("|*                                                      *|\n");
+	printf("|* -> WHAT'S HAPPENING?                                 *|\n");
+	printf("|* ->  + (add tweet), @ (Go to perfil of), Logout: ");
+	user_input(2);
 }
-
-
 
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
 // signup los tweets.
 void print_messages(char* str){
-	/*
 	if(strcmp(user_option, "login")==0){ // Imprimir TIMELINE del usuario actual.
-		list_tweets *temp = INFO_USER-> timeline;
-		print_tweet(temp);
-	}else if (strcmp(user_option, "@")==0){ // imprimir TWEETS de otra persona (@)
+		if(!(INFO_USER->timeline))
+			print_tweet(INFO_USER->timeline);
+
+	}else if (user_option[0] == '@' ){ // imprimir TWEETS de otra persona (@)
 		int k = hash_function(str);
 		list_users *usertemp = HashTable[k];
-		while (usertemp->nodo.user != str)
-			usertemp = usertemp->next;
-		
-		list_tweets *temporal= usertemp->nodo.tweets;
-		print_tweet(temporal);	
+
+		if (strcmp(usertemp->nodo.user, str) != 0){
+			while( strcmp(usertemp->nodo.user, str) != 0)
+				usertemp = usertemp->next;
+		}
+
+		//list_tweets *temporal = usertemp->nodo.tweets;
+		print_tweet(usertemp->nodo.tweets);	
 	}
-	*/
 }
 
 void print_tweet(list_tweets *temp){
-	while(temp->next != NULL){
-			char aux[18] = "@";
-			char usertweet[SLOTS_TWEET];
-			strncpy(temp->tweets.message, usertweet, SLOTS_TWEET);
-			strcat(aux,temp->tweets.user);
-			printf("--------------------------------------------------");
-			printf("|*  %17s                                           *|\n",aux);
-			while (strlen(usertweet) > 50 ){  
-				printf("|*  %.50s  *|\n",usertweet);
-				memmove(usertweet, usertweet+OFFSET, strlen(usertweet)+1-OFFSET);
-			}
-			printf("|*  %s\n  *|",usertweet);
-			temp = temp-> next;
-			}
+
+	while(temp != NULL){
+		char aux[18] = "@";
+		char format_time[25];
+		strftime(format_time, 25, "%X%p - %x", temp->tweets.time );
+		strcat(aux, temp->tweets.user);
+
+		printf("|*------------------------------------------------------*|\n");
+		printf("|*  %17s        %25s  *|\n",aux, format_time);
+		
+		char usertweet[SLOTS_TWEET];
+		strncpy(usertweet, temp->tweets.message, SLOTS_TWEET);
+		while (strlen(usertweet) > 50 ){  
+			printf("|*  %.50s  *|\n",usertweet);
+			memmove(usertweet, usertweet+OFFSET, strlen(usertweet)+1-OFFSET);
+		}
+		printf("|*  %.50s  *|\n",usertweet);
+		temp = temp->next;
+	}
 }
 
 void follow_user(char *str){
-	printf("A1: %s", str);
+	printf("A1: %s\n", str);
 
 	int h_usert = hash_function(str);
 	
-	printf("A");
+	printf("A\n");
 	
-	list_users* new_fuser = HashTable[h_usert];
-	list_users* user_aux = INFO_USER->following;
-	
-	printf("B");
-
-	while(user_aux->next != NULL){
-		user_aux = user_aux->next;
+	list_users *new_fuser = HashTable[h_usert];
+	while(new_fuser->id != 0){
+		if( strcmp(new_fuser->nodo.user, str)==0 )
+			break;
+		new_fuser = new_fuser->next;
 	}
 
-	printf("C");
+	printf("B\n");
+	if(INFO_USER->following != NULL) {
+		list_users *user_aux = INFO_USER->following;
+		while(user_aux->next != NULL)
+			user_aux = user_aux->next;
+		user_aux->next = new_fuser;
+	}
+	printf("|*                                                       *|\n");
+	printf("|* -> Following success!                                 *|\n");
+	printf("|*                                                       *|\n");
+	
+	printf("|* -> Press any key to continue...");
 
-	user_aux->next = new_fuser;
-	printf("|* Following success!");
+	fflush(stdout);
+	system("bash -c \"read -sn 1\"");	
 }
 
 int main(){

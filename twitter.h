@@ -8,6 +8,9 @@ void initial_interfaz();
 // sobrantes hasta conseguir el '\n' que representa el presionar ENTER.
 void cleanBuffer(const char*);
 
+// 
+void cleanBufferV2();
+
 // Funcion encargada en solicitar por pantalla el username y password al usuario
 // por standardInput.
 int name_pass();

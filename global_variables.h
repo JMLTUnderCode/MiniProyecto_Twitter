@@ -62,8 +62,8 @@ struct list_tweets{
 char user_option[10];			// Para las  opciones que toma el user.(login, signup, etc)
 char username[17]; 				// Para username del usuario, MAX 16 Chars.
 char password[17]; 				// Para password del usuario, MAX 16 chars/digitos.
-user_data *INFO_USER; 		// Informacion clobal del usuario que esta logeado.
-
+user_data *INFO_USER; 		// Informacion global del usuario que esta logeado.
+user_data *INFO_FUSER; 		// Informacion global de cualquier usuario que se quiera seseguir.
 /***************************************************************/
 // Definicion de HashTable y funciones para la misma.
 list_users *HashTable[SLOTS_HASH];
