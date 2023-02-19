@@ -83,11 +83,7 @@ int search_node(char* str){
 	}
 }
 
-// Funcion que muestra la interfaz base del programa. Nombre de la 
-// App simulada, prompt base y solicitud de datos.
-void initial_interfaz(){
-	while(TRUE){
-		system("clear");
+void logo_twitter(){
 		printf("|* .'````````````````````````````````````````````````'. *|\n");
 		printf("|*.^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^.*|\n");
 		printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
@@ -112,6 +108,14 @@ void initial_interfaz(){
 		printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
 		printf("|*'^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^'*|\n");
 		printf("|* '``^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^``' *|\n");
+}
+
+// Funcion que muestra la interfaz base del programa. Nombre de la 
+// App simulada, prompt base y solicitud de datos.
+void initial_interfaz(){
+	while(TRUE){
+		system("clear");
+		logo_twitter();
 		printf(".--------------------------------------------------------.\n");
 		printf("|********************************************************|\n");
 		printf("|*                  -=-   TWITTER   -=-                 *|\n");
@@ -132,7 +136,6 @@ void initial_interfaz(){
 				break;
 			} else if(strcmp(user_option, "signup")==0) {
 				signup();
-				Goto_init();
 				break;
 			}else if(strcmp(user_option, "leave")==0) {
 				leave();
@@ -207,13 +210,16 @@ void Goto_init(){
 // almacena la DataUsers.
 void signup(){
 	system("clear");
+	logo_twitter();
 	printf(".--------------------------------------------------------.\n");
 	printf("|********************************************************|\n");
 	printf("|*           -=-   Register on TWITTER   -=-            *|\n");
 	printf("|*                                                      *|\n");
 	
 	// Solicitamos datos para registrar.
-	name_pass();
+	if(!name_pass()){
+		return;
+	}
 	add_node(username);
 
 	printf("|*                                                      *|\n");
@@ -233,6 +239,7 @@ void logout(){
 	printf("|*                                                      *|\n");
 	printf("|* -> Logout Successful!                                *|\n");
 	printf("|*                                                      *|\n");
+	sleep(2);
 	return;
 }
 
@@ -264,15 +271,9 @@ void goto_perfil(){
 		cleanBufferV2();
 
 		if(user_validation(user_temp)){
-			if( INFO_FUSER->tweets ){
-				printf("GOTOPER CHECK 1\n");
-				print_messages(user_temp);
-			}else{
-				printf("|*                                                      *|\n");
-				printf("|* -> This user hasn't tweeted yet.                     *|\n");
-			}
+			print_messages(user_temp);
 			break;
-		} else{
+		} else {
 			printf("|* -> Error: User not found.                            *|\n");
 			printf("|* -> Do you want to try again?[Y/n]: ");
 			scanf("%s", opt);
@@ -294,7 +295,7 @@ void goto_perfil(){
 		if( strcmp(user_option, "follow") == 0 ) {
 			follow_user(user_temp);	
 		} else if ( strcmp(user_option, "goback") == 0 ) {
-			user_timeline();
+			//user_timeline();
 			return;
 		} else if ( strcmp(user_option, "logout") == 0 ) {
 			logout();
@@ -321,15 +322,13 @@ void add_tweet(){
 		cleanBuffer(newTweet->tweets.message);
 	
 	//strncpy(newTweet->tweets.message, n_t, SLOTS_TWEET);
-
-	time_t t_nt;
-	time(&t_nt);
-
+	//
 	strncpy(newTweet->tweets.user, INFO_USER->user, MAX_INPUT);
+	time_t t_nt;
 	newTweet->tweets.time = localtime(&t_nt);
 	newTweet->next = NULL;
 
-	if( INFO_USER->tweets ){
+	if( INFO_USER->tweets != NULL ){
 		list_tweets *list_aux = INFO_USER->tweets;
 	
 		while(list_aux->next != NULL)
@@ -343,13 +342,21 @@ void add_tweet(){
 	}
 	
 	// Se busca por todos los usuarios en la lista TIMELINE
-	if( INFO_USER->followers ){
+	if( INFO_USER->followers != NULL ){
 		list_users *p_follows = INFO_USER->followers;
 
 		while( p_follows != NULL) {
+			int kp_user = hash_function(p_follows->nodo.user);
+			
+			list_users *aux = HashTable[kp_user];
+			while(aux != NULL){
+				if(strcmp(aux->nodo.user, p_follows->nodo.user)==0)
+					break;
+				aux = aux->next;
+			}
+			aux->nodo.timeline = newTweet;
 
-			list_tweets *l_temp = p_follows->nodo.timeline;
-			if(l_temp != NULL){
+			/*if(l_temp != NULL){
 				while( l_temp->next != NULL)
 					l_temp = l_temp->next;
 			
@@ -359,7 +366,8 @@ void add_tweet(){
 				newTweet->id = 1;
 				p_follows->nodo.timeline = newTweet;
 				printf("CHECK MESS 2: %s\n", INFO_USER->followers->nodo.timeline->tweets.message);
-			}
+				
+			}*/
 
 			p_follows = p_follows->next;
 		}
@@ -423,6 +431,12 @@ void user_timeline(){
 		printf("|*                                                      *|\n");
 		printf("|* -> Tweets Timeline:                                  *|\n");
 		printf("|*                                                      *|\n");
+		printf("user     : %s\n", INFO_USER->user);
+		printf("pass h   : %d\n", INFO_USER->password_h);
+		printf("timeline : %d\n", INFO_USER->timeline==NULL);
+		printf("tweets   : %d\n", INFO_USER->tweets==NULL);
+		printf("followers: %d\n", INFO_USER->followers==NULL);
+		printf("following: %d\n", INFO_USER->following==NULL);
 
 		print_messages(username);
 
@@ -448,11 +462,11 @@ void user_timeline(){
 		if(strcmp(user_option, "logout") == 0){
 			logout();
 			break;
-		}else if( user_option[0] == '+' ){
+		} else if( user_option[0] == '+' ){
 			add_tweet();
 		} else if( user_option[0] == '@' ){
 			goto_perfil();
-			break;
+			//break;
 		}
 	}
 	return;
@@ -461,18 +475,33 @@ void user_timeline(){
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
 // signup los tweets.
 void print_messages(char* str){
-	if(strcmp(user_option, "login")==0){ // Imprimir TIMELINE del usuario actual.;
-		print_tweet(INFO_USER->timeline);
-
-	}else if (user_option[0] == '@' ){ // imprimir TWEETS de otra persona (@)
-		//int k = hash_function(str);
-		//list_users *usertemp = HashTable[k];
-		printf("CHECK 1\n");
-		//if (strcmp(usertemp->nodo.user, str) != 0){
-		//	while( strcmp(usertemp->nodo.user, str) != 0)
-		//		usertemp = usertemp->next;
-		//}
-		print_tweet(INFO_FUSER->tweets);	
+	printf("CHECK OPTION: %s\n", user_option);
+	
+	// Imprimir timeline del usuario actual.
+	if(strcmp(user_option, "login")==0 && strcmp(str, username)==0){
+		if(INFO_USER->timeline != NULL)
+			print_tweet(INFO_USER->timeline);
+		else {	
+				printf("|*                                                      *|\n");
+				printf("|* -> Your timeline is empty now.                       *|\n");
+			}
+	// Imprimir tweets de otra usuario.
+	}else if (user_option[0] == '@' && strcmp(str, username) != 0 ){
+		if(INFO_FUSER->tweets != NULL)
+			print_tweet(INFO_FUSER->tweets);
+		else{
+				printf("|*                                                      *|\n");
+				printf("|* -> This user hasn't tweeted yet.                     *|\n");
+			
+		}
+	// Imprimir tweets del usuario actual.
+	} else if(user_option[0] == '@' && strcmp(str, username)==0 ){
+		if(INFO_USER->tweets != NULL){
+			print_tweet(INFO_USER->tweets);
+		} else {
+				printf("|*                                                      *|\n");
+				printf("|* -> You haven't tweeted yet.                          *|\n");
+		}
 	}
 }
 
@@ -518,7 +547,8 @@ void follow_user(char *str){
 	*/
 	
 	list_users *new_follow = (list_users*)malloc(sizeof(list_users));
-	
+	new_follow->next = NULL;
+
 	// Agregar a la lista de SIGUIENDOS del usuario principal.
 	if(INFO_USER->following != NULL) {
 		list_users *user_aux = INFO_USER->following;
