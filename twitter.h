@@ -72,6 +72,7 @@ void print_tweet(struct list_tweets*);
 //
 void follow_user(char*);
 
+void logo_twitter();
 /**/
 
 
