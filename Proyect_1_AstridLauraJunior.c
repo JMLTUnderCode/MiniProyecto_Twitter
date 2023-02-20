@@ -11,6 +11,7 @@
 
 #include "twitter.h"
 
+// Funcion que obtiene el key de una string(username), incluso password.
 int hash_function(char *key){
 	int ln = strlen(key);
 	int accum = 0;
@@ -23,11 +24,16 @@ int hash_function(char *key){
 // Funcion que limpiar el Buffer del teclado extrayendo todos lso caracteres 
 // sobrantes hasta conseguir el '\n' que representa el presionar ENTER.
 void cleanBuffer(const char* str){
-	int toint = (int)(str[strlen(str)-1]);
-	if(toint != 10 &&  toint != 0) 
-		while(getchar() != '\n');
+	if(strlen(str)+1 != SLOTS_TWEET)
+		return;
+	int c;
+	do{
+		c = getchar();
+	}while( c != EOF && c!= '\n');
 }
 
+// Funcion que se encarga de la limpieza del teclado cuando se ingresan datos
+// por arriba del permitido.
 void cleanBufferV2(){
 	int c;
 	do{
@@ -35,6 +41,8 @@ void cleanBufferV2(){
 	}while( c != EOF && c != '\n');
 }
 
+// Funcion que se encarga de agregar un nodo de tipo usar_data a la tabla de
+// hash.
 void add_node(char* u_name){
 	list_users *newUser = (list_users*)malloc(sizeof(list_users));	
 	int k_user = hash_function(u_name);
@@ -60,6 +68,7 @@ void add_node(char* u_name){
 	}
 }
 
+// Funcion que busca en la tabla de hash la funcion del usuario.
 int search_node(char* str){
 	int k_user = hash_function(str);
 
@@ -83,6 +92,7 @@ int search_node(char* str){
 	}
 }
 
+// Logo de twitter.
 void logo_twitter(){
 		printf("|* .'````````````````````````````````````````````````'. *|\n");
 		printf("|*.^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^.*|\n");
@@ -216,9 +226,9 @@ void signup(){
 	printf("|*                                                      *|\n");
 	
 	// Solicitamos datos para registrar.
-	if(!name_pass()){
+	if(!name_pass())
 		return;
-	}
+	
 	add_node(username);
 
 	printf("|*                                                      *|\n");
@@ -229,7 +239,9 @@ void signup(){
 	printf("|*    Pass: %16s                            *|\n", password);
 	printf("|* -> Do not forget!                                    *|\n");
 	printf("|*                                                      *|\n");
-	
+	printf("|* -> Press any key to continue...");
+	fflush(stdout);
+	system("bash -c \"read -sn 1\"");	
 }
 
 // Funcion que permite Deslogear a un usuario de Twitter y llevarlo a la interfaz inicial
@@ -275,8 +287,7 @@ void goto_perfil(){
 			break;
 		} else {
 			printf("|* -> Error: User not found.                            *|\n");
-			printf("|* -> Do you want to try again?[Y/n]: ");
-			scanf("%s", opt);
+			printf("|* -> Do you want to try again?[Y/n]: "); scanf("%s", opt);
 			cleanBufferV2();
 			lowercase(opt);
 			if( opt[0] == 'n')
@@ -312,13 +323,12 @@ void goto_perfil(){
 void add_tweet(){
 	// Agregar tweet a la lista de tweets propios del usuario logeado.
 	list_tweets *newTweet = (list_tweets*)malloc(sizeof(list_tweets));
+	
 	printf("|*                                                      *|\n");
 	printf("|* -> Enter tweet(Max. 280 chars): ");
-	
-	fgets(newTweet->tweets.message, SLOTS_TWEET, stdin);
 
-	if(strlen(newTweet->tweets.message) == SLOTS_TWEET)
-		cleanBuffer(newTweet->tweets.message);
+	fgets(newTweet->tweets.message, SLOTS_TWEET, stdin);
+	cleanBuffer(newTweet->tweets.message);
 	
 	strncpy(newTweet->tweets.user, INFO_USER->user, MAX_INPUT);
 
@@ -370,11 +380,10 @@ void add_tweet(){
 			p_follows = p_follows->next;
 		}
 	}
-
+	
 	printf("|*                                                       *|\n");
 	printf("|* -> Tweet add success!                                 *|\n");
 	printf("|*                                                       *|\n");
-	
 	printf("|* -> Press any key to continue...");
 	fflush(stdout);
 	system("bash -c \"read -sn 1\"");	
@@ -431,13 +440,6 @@ void user_timeline(){
 		printf("|*                                                      *|\n");
 		printf("|* -> Tweets Timeline:                                  *|\n");
 		printf("|*                                                      *|\n");
-		/*printf("user     : %s\n", INFO_USER->user);
-		printf("pass h   : %d\n", INFO_USER->password_h);
-		printf("timeline : %d\n", INFO_USER->timeline==NULL);
-		printf("tweets   : %d\n", INFO_USER->tweets==NULL);
-		printf("followers: %d\n", INFO_USER->followers==NULL);
-		printf("following: %d\n", INFO_USER->following==NULL);
-		*/
 		
 		print_messages(username);
 
@@ -475,9 +477,9 @@ void user_timeline(){
 // Funcion que permite mostrar por pantalla dependiendo el caso de login o 
 // signup los tweets.
 void print_messages(char* str){
-	
+
 	// Imprimir timeline del usuario actual.
-	if((strcmp(user_option, "login")==0 || user_option[0]=='+') && strcmp(str, username)==0){
+	if((strcmp(user_option, "login")==0 || user_option[0]=='+' || strcmp(user_option, "goback")==0) && (strcmp(str, username)==0)){
 		if(INFO_USER->timeline != NULL)
 			print_tweet(INFO_USER->timeline);
 		else {	
@@ -504,6 +506,7 @@ void print_messages(char* str){
 	}
 }
 
+// Funcion encargada de mostrar por pantalla la informacion del tweet.
 void print_tweet(list_tweets *temp){
 
 	while(temp != NULL){
@@ -528,6 +531,8 @@ void print_tweet(list_tweets *temp){
 	}
 }
 
+// Funcion encargada de seguir a los otros usuarios o verificar si seguir es
+// valido o no.
 void follow_user(char *str){
 		
 	if(strcmp(str, username) == 0){
@@ -537,30 +542,41 @@ void follow_user(char *str){
 		return;
 	}
 
-	list_users *new_follow = (list_users*)malloc(sizeof(list_users));
+	list_users *new_follow;
+	new_follow->nodo = *INFO_FUSER;
 	new_follow->next = NULL;
 
 	// Agregar a la lista de SIGUIENDOS del usuario principal.
-	if(INFO_USER->following != NULL) {
+	if(INFO_USER->following != NULL){
 		list_users *user_aux = INFO_USER->following;
-		while(user_aux->next != NULL)
+		if(strcmp(user_aux->nodo.user, str)==0){
+			printf("|*                                                      *|\n");
+			printf("|* -> You already follow this user.                     *|\n");
+			printf("|*                                                      *|\n");
+			return;
+		}
+		while(user_aux->next != NULL){
+			if(strcmp(user_aux->nodo.user, str)==0){
+				printf("|*                                                      *|\n");
+				printf("|* -> You already follow this user.                     *|\n");
+				printf("|*                                                      *|\n");
+				return;
+			}
 			user_aux = user_aux->next;
-		new_follow->nodo = *INFO_FUSER;
+		}
 		user_aux->next = new_follow;
 	}else {
-		new_follow->nodo = *INFO_FUSER;
 		INFO_USER->following = new_follow;
 	}
 
+	new_follow->nodo = *INFO_USER;
 	// Agregar a la lista de SEGUIDORES del usuario a seguir.
 	if(INFO_FUSER->followers != NULL) {
 		list_users *user_aux = INFO_FUSER->followers;
 		while(user_aux->next != NULL)
 			user_aux = user_aux->next;
-		new_follow->nodo = *INFO_USER;
 		user_aux->next = new_follow;
 	} else {
-		new_follow->nodo = *INFO_USER;
 		INFO_FUSER->followers = new_follow;	
 	}
 
@@ -569,6 +585,7 @@ void follow_user(char *str){
 	printf("|*                                                      *|\n");
 }
 
+// Funcion main, llamado e inicializacion de variables globales/iniciales.
 int main(){
 	for(int k = 0; k < SLOTS_HASH; k++){
 		HashTable[k] = &list_users_df;

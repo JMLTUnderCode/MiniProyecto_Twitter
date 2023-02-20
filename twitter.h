@@ -63,16 +63,18 @@ void print_messages(char*);
 // Funcion para pasar una cadena a solo chars de tipo minuscula.
 void lowercase(char*);
 
-//
+// Funcion para el calculo del key de un string(username).
 int hash_function(char*);
 
-//
+// Funcion que muestra por terminal la lista de tweets.
 void print_tweet(struct list_tweets*);
 
-//
+// Funcion que se encarga de seguir y verificar el seguimiento entre usuarios.
 void follow_user(char*);
 
+// Funcion que muestra por terminal el logo de twitter.
 void logo_twitter();
+
 /**/
 
 
