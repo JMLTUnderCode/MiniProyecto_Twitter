@@ -5,37 +5,49 @@ module Lexer where
 %wrapper "basic"
 
 $digit = 0-9
-
-$backslash = [\\] 
+$alpha = [a-zA-Z]
+$backslash = \92 
 $slash = [\/] 
-$equal = [\=] 
+$canvas = [ \\ \_ \/ \"empty" \|]
+-- ksakasakk
 
 tokens :-
   $white+         ;
-  $digit+          { \s -> TkNumLit (stringToInt s )}
-  \,               { \s -> TkComa }
-  \;               { \s -> TkPuntoYComa }
-  \(               { \s -> TkParAbre }
-  \)               { \s -> TkParCierra }
-  \+               { \s -> TkMas }
-  \-               { \s -> TkMenos}
-  \*               { \s -> TkMult}
-  \/               { \s -> TkDiv}
-  \%               { \s -> TkMod }
-  $slash+ $backslash  { \s -> TkConjuncion}
+  $digit+               { \s -> TkNumLit (stringToInt s )}
+
+  \< + $canvas + >      { \s -> TkCanvasList s}
+  \,                    { \s -> TkComa }
+  \;                    { \s -> TkPuntoYComa }
+  \(                    { \s -> TkParAbre }
+  \)                    { \s -> TkParCierra }
+  \+                    { \s -> TkMas }
+  \-                    { \s -> TkMenos}
+  \*                    { \s -> TkMult}
+  \/                    { \s -> TkDiv}
+  \%                    { \s -> TkMod }
+  $slash+ $backslash    { \s -> TkConjuncion}
   $backslash+ $slash    { \s -> TkDisyuncion }
-  \^               { \s -> TkNegacion }
-  \<               { \s -> TkMenor }
-  \<+$equal        { \s -> TkMenorIgual }
-  \>               { \s -> TkMayor }
-  \>+$equal        { \s -> TkMayorIgual }
-  $equal           { \s -> TkIgual}
-  \/+$equal        { \s -> TkDesigual }
-  \:+ $equal       { \s -> TkAsignacion}
-  \:               { \s -> TkConcatHorizontal }
-  \|               { \s -> TkConcatVertical }
-  \$               { \s -> TkRotacion }
-  \'               { \s -> TkTransposicion }
+  \^                    { \s -> TkNegacion }
+  \<                    { \s -> TkMenor }
+  \<+=                  { \s -> TkMenorIgual }
+  \>                    { \s -> TkMayor }
+  \>+=                  { \s -> TkMayorIgual }
+  =                     { \s -> TkIgual}
+  \/+=                  { \s -> TkDesigual }
+  \:+ =                 { \s -> TkAsignacion}
+  \:                    { \s -> TkConcatHorizontal }
+  \|                    { \s -> TkConcatVertical }
+  \$                    { \s -> TkRotacion }
+  \'                    { \s -> TkTransposicion }
+  "True"                { \s -> TkTrue  }
+  "False"               { \s -> TkFalse  }
+  "if"                  { \s -> TkIf }
+  "using"               { \s -> TkUsing }
+  "repeat"              { \s -> TkRepeat }
+  "begin"               { \s -> TkBegin }
+  "end"                 { \s -> TkEnd }
+  
+  $alpha+               { \s -> TkIdent s }
 
 {
 
@@ -43,6 +55,7 @@ stringToInt :: String -> Int
 stringToInt s = read s
 
 data Token = TkNumLit Int
+            | TkIdent String
             | TkComa
             | TkPuntoYComa
             | TkParAbre
@@ -66,6 +79,14 @@ data Token = TkNumLit Int
             | TkRotacion
             | TkTransposicion
             | TkAsignacion
+            | TkTrue 
+            | TkFalse
+            | TkIf
+            | TkUsing
+            | TkRepeat
+            | TkBegin
+            | TkEnd
+            | TkCanvasList String
      
              deriving (Eq,Show)
 }
